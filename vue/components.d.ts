@@ -11,6 +11,7 @@ declare module '@vue/runtime-core' {
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     PokemonCard: typeof import('./src/components/PokemonCard.vue')['default']
     PokemonCardSkeleton: typeof import('./src/components/PokemonCardSkeleton.vue')['default']
+    PokemonPaginator: typeof import('./src/components/PokemonPaginator.vue')['default']
     SearchBar: typeof import('./src/components/SearchBar.vue')['default']
   }
 }

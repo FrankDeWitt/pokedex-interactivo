@@ -1,4 +1,3 @@
-export function getErrorMessage(error: unknown) {
-  // @ts-ignore
+export function getErrorMessage(error: any) {
   return error?.message || String(error);
 }

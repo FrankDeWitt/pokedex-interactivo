@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { useFetch } from '@vueuse/core'
 
 import { getApiRoute } from '@/config/getApiRoute';
-import { getErrorMessage, createTypes, paginatePokemons } from '@/utils';
+import { getErrorMessage, paginatePokemons } from '@/utils';
 
 import { NamedAPIResource, Pokemon } from 'pokenode-ts';
 import { pokemon } from './api'
@@ -11,6 +11,7 @@ import { pokemon } from './api'
 export const usePokeStore = defineStore('pokemon', () => {
 
 
+  const page: Ref<number> = ref(1);
   const isFetchingPokemons: Ref<boolean> = ref(false);
   const fetchingPokemonError: Ref<string> = ref('');
   const pokemonDataBase: Ref<NamedAPIResource[]> = ref([]);
@@ -23,8 +24,8 @@ export const usePokeStore = defineStore('pokemon', () => {
       return
     }
     pokemonDataBaseFiltered.value = pokemonDataBase.value.filter(pokemonApi =>
-      Object.keys(pokemonApi).some(pokemonApiKey => 
-        pokemonApi[pokemonApiKey as keyof NamedAPIResource].toLowerCase().includes(pokemonSearched.toLowerCase())
+      Object.keys(pokemonApi).some(() => 
+        pokemonApi['name'].toLowerCase().includes(pokemonSearched.toLowerCase())
       )
     );
     getPaginatedPokemons(pokemonDataBaseFiltered.value);
@@ -38,7 +39,7 @@ export const usePokeStore = defineStore('pokemon', () => {
 
   const getPokemons = async () => {
     const url = getApiRoute(pokemon, { params: {}, query: { offset: 0, limit: 100000 }});
-    const { isFetching, error, data } = await useFetch(url).get().json()
+    const { error, data } = await useFetch(url).get().json()
 
     if (error.value) {
       fetchingPokemonError.value = getErrorMessage(error);
@@ -47,17 +48,19 @@ export const usePokeStore = defineStore('pokemon', () => {
     }
   };
 
-  const getPaginatedPokemons = async (arrayToFilter = pokemonDataBase.value, page = 1) => {
-    const promises = paginatePokemons(arrayToFilter, 24, page).map(async (pokemon: any) => {
+  const getPaginatedPokemons = async (arrayToFilter = pokemonDataBase.value, goToPage: number = 1) => {
+    const promises = paginatePokemons(arrayToFilter, 24, goToPage).map(async (pokemon: any) => {
       return await getPokemonData(pokemon.url);
     });
+    console.log("🚀 ~ file: pokemon.ts:56 ~ getPaginatedPokemons ~ goToPage", goToPage)
+    page.value = goToPage;
     pokemonData.value = await Promise.all(promises);
     isFetchingPokemons.value = false
   }
 
   const getPokemonData = async (url: string) => {
     isFetchingPokemons.value = true
-    const { isFetching, error, data } = await useFetch(url).get().json()
+    const { error, data } = await useFetch(url).get().json()
     if (error.value) {
       fetchingPokemonError.value = getErrorMessage(error);
     } else {
@@ -69,10 +72,9 @@ export const usePokeStore = defineStore('pokemon', () => {
     searchPokemon,
     fetchPokemons,
     getPaginatedPokemons,
+    page,
     isFetchingPokemons,
     fetchingPokemonError,
     pokemonData,
-    pokemonDataBaseFiltered,
-    pokemonDataBase,
   };
 });
