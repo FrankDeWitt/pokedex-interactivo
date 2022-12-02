@@ -7,7 +7,10 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    Header: typeof import('./src/components/Header.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     PokemonCard: typeof import('./src/components/PokemonCard.vue')['default']
+    PokemonCardSkeleton: typeof import('./src/components/PokemonCardSkeleton.vue')['default']
+    SearchBar: typeof import('./src/components/SearchBar.vue')['default']
   }
 }

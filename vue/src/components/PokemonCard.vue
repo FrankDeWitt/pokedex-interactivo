@@ -1,7 +1,3 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
   <div class="flex flex-col h-50 bg-white text-black shadow-lg rounded-md sm:h-20 sm:flex-row">
     <div class=" order-1 sm:mx-0">
